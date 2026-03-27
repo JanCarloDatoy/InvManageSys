@@ -265,7 +265,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 📞 Support
 
 For support, please contact:
-- Email: [your-email@example.com]
+- Email: jcmdatoy123@gmail.com
 - GitHub: [JanCarloDatoy](https://github.com/JanCarloDatoy)
 
 ## 🎯 Project Status
