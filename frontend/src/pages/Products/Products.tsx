@@ -71,14 +71,43 @@ const Products: React.FC = () => {
     }
   };
 
+  const getCategoryName = (product: Product) => {
+    if (!product.category) return 'N/A';
+
+    if (typeof product.category === 'object' && 'name' in product.category) {
+      return product.category.name;
+    }
+
+    const categoryId = Number(product.category);
+    const matchedCategory = categories.find((cat) => cat.id === categoryId);
+
+    return matchedCategory ? matchedCategory.name : 'N/A';
+  };
+
   const handleEdit = (product: Product) => {
     setEditingProduct(product);
+
+    let categoryValue = '';
+    if (product.category) {
+      if (typeof product.category === 'object' && 'id' in product.category) {
+        categoryValue = product.category.id.toString();
+      } else {
+        const productCatId = Number(product.category);
+        if (!Number.isNaN(productCatId)) {
+          categoryValue = productCatId.toString();
+        } else {
+          const matched = categories.find((cat) => cat.name === String(product.category));
+          categoryValue = matched ? matched.id.toString() : '';
+        }
+      }
+    }
+
     setFormData({
       name: product.name,
       description: product.description || '',
       sku: product.sku,
       barcode: product.barcode || '',
-      category: product.category?.name || (typeof product.category === 'string' ? product.category : '') || '',
+      category: categoryValue,
       unit_price: product.unit_price.toString(),
       cost_price: product.cost_price.toString(),
       quantity_in_stock: product.quantity_in_stock.toString(),
@@ -139,16 +168,18 @@ const Products: React.FC = () => {
           <h1 className="text-2xl font-bold text-gray-900">Products</h1>
           <p className="text-gray-600">Manage your inventory</p>
         </div>
-        <button
-          onClick={() => {
-            resetForm();
-            setShowModal(true);
-          }}
-          className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-        >
-          <PlusIcon className="h-5 w-5 mr-2" />
-          Add Product
-        </button>
+        <div>
+          <button
+            onClick={() => {
+              resetForm();
+              setShowModal(true);
+            }}
+            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          >
+            <PlusIcon className="h-5 w-5 mr-2" />
+            Add Product
+          </button>
+        </div>
       </div>
 
       {error && (
@@ -213,7 +244,7 @@ const Products: React.FC = () => {
                     {product.sku}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {product.category?.name || (typeof product.category === 'string' ? product.category : 'N/A')}
+                    {getCategoryName(product)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">{product.quantity_in_stock}</div>
@@ -294,15 +325,8 @@ const Products: React.FC = () => {
                   required
                 >
                   <option value="">Select Category</option>
-                  <option value="Block">Block</option>
-                  <option value="Head">Head</option>
-                  <option value="Injectors">Injectors</option>
-                  <option value="Center Spring">Center Spring</option>
-                  <option value="Flyball">Flyball</option>
-                  <option value="Pulley">Pulley</option>
-                  <option value="Pipes">Pipes</option>
                   {categories.map((category) => (
-                    <option key={category.id} value={category.name}>
+                    <option key={category.id} value={category.id.toString()}>
                       {category.name}
                     </option>
                   ))}
